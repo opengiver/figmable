@@ -1,0 +1,49 @@
+{
+  "name": "figmable",
+  "version": "0.0.1",
+  "description": "A CLI tool to fetch Figma variables and update CSS.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lbo728/figmable.git"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/index.js",
+  "bin": {
+    "figmable": "./dist/cjs/index.cjs"
+  },
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "prepare": "npm run build",
+    "start": "ts-node src/index.ts"
+  },
+  "keywords": [
+    "figma"
+  ],
+  "author": "Byungsker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lbo728/figmable/issues"
+  },
+  "homepage": "https://github.com/lbo728/figmable#readme",
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "@rollup/plugin-json": "^6.1.0",
+    "axios": "^1.7.9",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/yargs": "^17.0.33",
+    "rollup": "^4.32.0",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.7.3"
+  }
+}
