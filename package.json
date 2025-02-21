@@ -4,7 +4,7 @@
   "description": "A CLI tool to fetch Figma variables and update CSS.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lbo728/figmable.git"
+    "url": "git+https://github.com/opengiver/figmable.git"
   },
   "exports": {
     ".": {
@@ -28,9 +28,9 @@
   "author": "Byungsker",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lbo728/figmable/issues"
+    "url": "https://github.com/opengiver/figmable/issues"
   },
-  "homepage": "https://github.com/lbo728/figmable#readme",
+  "homepage": "https://github.com/opengiver/figmable#readme",
   "dependencies": {
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-json": "^6.1.0",
