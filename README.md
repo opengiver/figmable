@@ -145,6 +145,22 @@ figmable \
   --output ./different/variables.json
 ```
 
+Disable backup file creation:
+
+```bash
+figmable --no-backup
+# or
+figmable -nb
+```
+
+Enable backup file creation (default behavior):
+
+```bash
+figmable --backup
+# or just
+figmable
+```
+
 ## File Structure
 
 - `.figmablerc`: Configuration file (automatically created in home directory)

@@ -14,6 +14,8 @@ interface Argv {
   cssFilePath: string;
   /** Path to the JSON file containing Figma variables */
   jsonFilePath: string;
+  /** Disable backup file creation */
+  noBackup?: boolean;
 }
 
 /**
@@ -22,7 +24,7 @@ interface Argv {
  * @returns {Promise<{ cssPath: string; backupPath: string }>} Paths to the updated CSS and backup files
  */
 export const updateCssVariables = async (argv: Argv): Promise<{ cssPath: string; backupPath: string }> => {
-  const { cssFilePath, jsonFilePath } = argv;
+  const { cssFilePath, jsonFilePath, noBackup = false } = argv;
 
   let figmaVariables: Record<string, string>;
   try {
@@ -76,11 +78,17 @@ export const updateCssVariables = async (argv: Argv): Promise<{ cssPath: string;
   });
 
   const backupFilePath = `${cssFilePath}.bak`;
-  fs.copyFileSync(cssFilePath, backupFilePath);
+  let backupCreated = "";
+
+  if (!noBackup) {
+    fs.copyFileSync(cssFilePath, backupFilePath);
+    backupCreated = backupFilePath;
+  }
+
   fs.writeFileSync(cssFilePath, updatedCss);
 
   return {
     cssPath: cssFilePath,
-    backupPath: backupFilePath,
+    backupPath: backupCreated,
   };
 };

@@ -141,6 +141,22 @@ figmable \
   --output ./different/variables.json
 ```
 
+백업 파일 생성 비활성화:
+
+```bash
+figmable --no-backup
+# 또는
+figmable -nb
+```
+
+백업 파일 생성 활성화 (기본 동작):
+
+```bash
+figmable --backup
+# 또는 그냥
+figmable
+```
+
 ## 파일 구조
 
 - `.figmablerc`: 설정 파일 (홈 디렉토리에 자동 생성)

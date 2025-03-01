@@ -76,6 +76,14 @@ const argv = yargs(hideBin(process.argv))
         description: "Path to save figma variables JSON",
         type: "string",
         default: "./figma-variables.json",
+      })
+      .option("backup", {
+        description: "Enable backup file creation",
+        type: "boolean",
+        default: true,
+      })
+      .check((argv) => {
+        return true;
       });
   })
   .strict(false)
@@ -100,6 +108,8 @@ interface Arguments {
   $0: string;
   /** File to open */
   open?: string;
+  /** Enable backup file creation */
+  backup?: boolean;
 }
 
 /**
@@ -161,14 +171,19 @@ const main = async () => {
     spinner.succeed(`Successfully fetched Figma variables!\n  └─ 📄 JSON file: ${jsonPath}`);
 
     spinner.start("Updating CSS file...");
+
     const { cssPath, backupPath } = await updateCssVariables({
       cssFilePath: runConfig.cssFilePath,
       jsonFilePath: runConfig.outputJsonPath,
+      noBackup: !parsedArgv.backup,
     });
+
+    const successMessage = `CSS file successfully updated!\n  └─ 🎨 CSS file: ${cssPath}`;
     if (backupPath) {
-      spinner.succeed(
-        `CSS file successfully updated!\n  └─ 🎨 CSS file: ${cssPath}\n  └─ 💾 Backup file: ${backupPath}`
-      );
+      spinner.succeed(`${successMessage}\n  └─ 💾 Backup file: ${backupPath}`);
+    } else {
+      spinner.succeed(successMessage);
+      console.log("\n📝 To enable backup files, run: figmable --backup or just figmable");
     }
   } catch (error) {
     spinner.fail(error instanceof Error ? error.message : "An error occurred!");
