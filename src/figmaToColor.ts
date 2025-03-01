@@ -1,27 +1,44 @@
+/**
+ * Module for updating CSS files with Figma color variables
+ * @module figmaToColor
+ */
+
 import * as fs from "fs";
 
+/**
+ * Arguments for CSS update operation
+ * @interface Argv
+ */
 interface Argv {
+  /** Path to the CSS file to update */
   cssFilePath: string;
+  /** Path to the JSON file containing Figma variables */
   jsonFilePath: string;
 }
 
-export const updateCssVariables = (argv: Argv): void => {
+/**
+ * Updates CSS file with color variables from Figma
+ * @param {Argv} argv - Arguments for the update operation
+ * @returns {Promise<{ cssPath: string; backupPath: string }>} Paths to the updated CSS and backup files
+ */
+export const updateCssVariables = async (argv: Argv): Promise<{ cssPath: string; backupPath: string }> => {
   const { cssFilePath, jsonFilePath } = argv;
 
   let figmaVariables: Record<string, string>;
   try {
+    if (!fs.existsSync(jsonFilePath)) {
+      throw new Error(`JSON file not found: ${jsonFilePath}\nPlease fetch Figma variables first.`);
+    }
     figmaVariables = JSON.parse(fs.readFileSync(jsonFilePath, "utf-8"));
   } catch (err) {
-    console.error(`Error reading JSON file at ${jsonFilePath}:`, err);
-    return;
+    throw new Error(`Error reading JSON file (${jsonFilePath}): ${err}`);
   }
 
   let globalCss: string;
   try {
     globalCss = fs.readFileSync(cssFilePath, "utf-8");
   } catch (err) {
-    console.error(`Error reading CSS file at ${cssFilePath}:`, err);
-    return;
+    throw new Error(`Error reading CSS file at ${cssFilePath}: ${err}`);
   }
 
   const existingVariables: Set<string> = new Set();
@@ -65,5 +82,8 @@ export const updateCssVariables = (argv: Argv): void => {
   fs.copyFileSync(cssFilePath, backupFilePath);
   fs.writeFileSync(cssFilePath, updatedCss);
 
-  console.log(`✅ ${cssFilePath}가 성공적으로 업데이트되었습니다! 백업은 ${backupFilePath}에 저장되었습니다.`);
+  return {
+    cssPath: cssFilePath,
+    backupPath: backupFilePath,
+  };
 };

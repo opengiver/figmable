@@ -6,6 +6,7 @@
     "type": "git",
     "url": "git+https://github.com/opengiver/figmable.git"
   },
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -15,10 +16,11 @@
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/index.js",
   "bin": {
-    "figmable": "./dist/cjs/index.cjs"
+    "figmable": "./dist/index.js"
   },
   "scripts": {
     "build": "rollup -c rollup.config.mjs",
+    "dev": "rollup -c rollup.config.mjs --watch",
     "prepare": "npm run build",
     "start": "ts-node src/index.ts"
   },
@@ -33,6 +35,7 @@
   "homepage": "https://github.com/opengiver/figmable#readme",
   "dependencies": {
     "axios": "^1.7.9",
+    "ora": "^7.0.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

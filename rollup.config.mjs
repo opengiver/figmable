@@ -1,3 +1,8 @@
+/**
+ * Rollup configuration for building Figmable
+ * @module rollup.config
+ */
+
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
@@ -8,18 +13,23 @@ export default {
   input: "src/index.ts",
   output: [
     {
-      file: "dist/cjs/index.cjs",
-      format: "cjs",
+      file: "dist/index.js",
+      format: "es",
+      sourcemap: true,
     },
     {
-      file: "dist/index.js",
-      format: "esm",
+      file: "dist/cjs/index.cjs",
+      format: "cjs",
+      sourcemap: true,
     },
   ],
   plugins: [
-    resolve(),
+    resolve({
+      preferBuiltins: true,
+    }),
     commonjs({
       transformMixedEsModules: true,
+      ignore: ["conditional-runtime-dependency"],
     }),
     typescript({
       tsconfig: "./tsconfig.json",
@@ -29,5 +39,11 @@ export default {
     json(),
     terser(),
   ],
+  external: ["yargs", "yargs/helpers", "path", "fs", "os", "child_process", "axios", "ora"],
   treeshake: true,
+  watch: {
+    include: "src/**",
+    exclude: "node_modules/**",
+    clearScreen: false,
+  },
 };

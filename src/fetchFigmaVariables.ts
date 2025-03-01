@@ -1,28 +1,56 @@
+/**
+ * Module for fetching color variables from Figma
+ * @module fetchFigmaVariables
+ */
+
 import * as fs from "fs";
 import * as path from "path";
 import axios from "axios";
 
+/**
+ * Arguments for Figma API fetch operation
+ * @interface FigmaFetchArgs
+ */
 interface FigmaFetchArgs {
+  /** Figma file key from the file URL */
   FIGMA_FILE_KEY: string;
+  /** Figma API access token */
   FIGMA_API_TOKEN: string;
+  /** Path to save the JSON output */
   outputJsonPath: string;
 }
 
+/**
+ * Figma node structure from API response
+ * @interface FigmaNode
+ */
 interface FigmaNode {
+  /** Node name */
   name?: string;
+  /** Child nodes */
   children?: FigmaNode[];
+  /** Fill styles including colors */
   fills?: { color?: { r: number; g: number; b: number } }[];
 }
 
+/**
+ * Figma API response structure
+ * @interface FigmaResponse
+ */
 interface FigmaResponse {
+  /** Root document node */
   document?: FigmaNode;
 }
 
-export const fetchFigmaVariables = async (argv: FigmaFetchArgs): Promise<void> => {
+/**
+ * Fetches color variables from Figma and saves them to a JSON file
+ * @param {FigmaFetchArgs} argv - Arguments for the fetch operation
+ * @returns {Promise<string>} Path to the saved JSON file
+ */
+export const fetchFigmaVariables = async (argv: FigmaFetchArgs): Promise<string> => {
   const { FIGMA_FILE_KEY, FIGMA_API_TOKEN, outputJsonPath } = argv;
 
   try {
-    console.log("Fetching Figma variables for file:", FIGMA_FILE_KEY);
     const response = await axios.get<FigmaResponse>(`https://api.figma.com/v1/files/${FIGMA_FILE_KEY}`, {
       headers: {
         "X-FIGMA-TOKEN": FIGMA_API_TOKEN,
@@ -65,16 +93,24 @@ export const fetchFigmaVariables = async (argv: FigmaFetchArgs): Promise<void> =
     const outputPath = outputJsonPath.endsWith(".json") ? outputJsonPath : `${outputDir}/figma-variables.json`;
     fs.writeFileSync(outputPath, JSON.stringify(colors, null, 2));
 
-    console.log(`✅ Figma Variables가 ${outputPath}에 성공적으로 저장되었습니다!`);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("❌ Figma Variables 가져오기 실패:", error.message);
-    } else {
-      console.error("❌ Figma Variables 가져오기 실패:", error);
+    return outputPath; // JSON 파일 경로 반환
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if (error.response?.status === 403) {
+        throw new Error("Figma API 토큰이 유효하지 않거나 파일에 대한 접근 권한이 없습니다.");
+      }
     }
+    throw error;
   }
 };
 
+/**
+ * Converts RGB values to hexadecimal color string
+ * @param {number} r - Red value (0-1)
+ * @param {number} g - Green value (0-1)
+ * @param {number} b - Blue value (0-1)
+ * @returns {string} Hexadecimal color string
+ */
 const rgbToHex = (r: number, g: number, b: number): string => {
   const toHex = (x: number): string => {
     const hex = Math.round(x * 255).toString(16);
