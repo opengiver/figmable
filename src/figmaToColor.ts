@@ -43,7 +43,7 @@ export const updateCssVariables = async (argv: Argv): Promise<{ cssPath: string;
 
   const existingVariables: Set<string> = new Set();
 
-  const rootContentMatch: RegExpMatchArray | null = globalCss.match(/@layer base \{\s*:root \{([^}]*)\}/);
+  const rootContentMatch: RegExpMatchArray | null = globalCss.match(/:root \{([^}]*)\}/);
 
   if (rootContentMatch) {
     const rootContent: string = rootContentMatch[1];
@@ -70,13 +70,10 @@ export const updateCssVariables = async (argv: Argv): Promise<{ cssPath: string;
     return cssVariables;
   };
 
-  const updatedCss: string = globalCss.replace(
-    /@layer base \{\s*:root \{([^}]*)\}/,
-    (match: string, rootContent: string) => {
-      const newVariables: string = generateCssVariables(figmaVariables, existingVariables);
-      return match.replace(rootContent, `${rootContent}\n${newVariables}`);
-    }
-  );
+  const updatedCss: string = globalCss.replace(/:root \{([^}]*)\}/, (match: string, rootContent: string) => {
+    const newVariables: string = generateCssVariables(figmaVariables, existingVariables);
+    return match.replace(rootContent, `${rootContent}\n${newVariables}`);
+  });
 
   const backupFilePath = `${cssFilePath}.bak`;
   fs.copyFileSync(cssFilePath, backupFilePath);

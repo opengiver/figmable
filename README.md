@@ -1,8 +1,32 @@
 # Figmable
 
+![Image](https://github.com/user-attachments/assets/094e589d-c835-484d-95bd-f32fc55a88f0)
 English | [한국어](.docs/README.ko.md)
 
 Figmable is a CLI tool that helps you sync color variables from your Figma design files directly to your CSS files. It extracts color variables from Figma and automatically updates your CSS files with the new color variables, making the design-to-development workflow seamless.
+
+## Quick Start
+
+```bash
+# 1. Save your configuration (one-time setup)
+figmable config --fileKey YOUR_KEY --token YOUR_TOKEN --path ./src/styles/global.css
+
+# 2. Run Figmable - That's it! 🎉
+figmable
+
+# Your CSS is now updated with Figma color variables!
+```
+
+Just two commands and you're done! Figmable will:
+
+- Fetch your color variables from Figma
+- Save them as JSON for reference
+- Automatically update your CSS file
+- Create a backup, just in case
+
+> 🎨 **Why Figmable?**  
+> While Figma provides a `/variables` API endpoint to fetch local variables, it's only available for paid plans.
+> Figmable offers a free alternative by extracting color codes from your Figma color palette and converting them into CSS variables!
 
 ## Features
 
@@ -26,15 +50,37 @@ Figmable is a CLI tool that helps you sync color variables from your Figma desig
    - Open your Figma file in browser
    - Copy the key from URL: `figma.com/file/YOUR_FILE_KEY/...`
 
-3. **CSS File**
-   - Must have `@layer base` and `:root` structure
+3. **Figma Color Objects**
+
+![Image](https://github.com/user-attachments/assets/1c0fe845-9bc5-4977-869d-67951f5be008)
+
+- Name your color objects with `--` prefix (e.g., `--primary-500`, `--orange-600`)
+- This naming convention is required for Figmable to identify and extract color variables
+- Example:
+  ```
+  --primary-500  →  #3B82F6
+  --orange-600   →  #EA580C
+  --neutral-900  →  #171717
+  ```
+
+4. **CSS File**
+
+   - Must have `:root` selector in your CSS
    - Example:
+
      ```css
+     /* With Tailwind */
      @layer base {
        :root {
          /* Your CSS variables will be added here */
          --primary: #000000;
        }
+     }
+
+     /* Or without Tailwind, simple CSS is fine too */
+     :root {
+       /* Your CSS variables will be added here */
+       --primary: #000000;
      }
      ```
 

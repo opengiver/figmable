@@ -1,8 +1,28 @@
 # Figmable
 
+![Image](https://github.com/user-attachments/assets/094e589d-c835-484d-95bd-f32fc55a88f0)
 [English](README.md) | 한국어
 
 Figmable은 Figma 디자인 파일의 컬러 변수를 CSS 파일과 직접 동기화하는 CLI 도구입니다. Figma에서 컬러 변수를 추출하고 CSS 파일을 자동으로 업데이트하여 디자인-개발 워크플로우를 원활하게 만듭니다.
+
+## 빠른 시작
+
+```bash
+# 1. 설정 저장 (최초 1회)
+figmable config --fileKey YOUR_KEY --token YOUR_TOKEN --path ./src/styles/global.css
+
+# 2. Figmable 실행 - 끝! 🎉
+figmable
+
+# CSS 파일이 Figma 컬러 변수로 업데이트되었습니다!
+```
+
+단 두 개의 명령어로 완료! Figmable이 자동으로:
+
+- Figma에서 컬러 변수를 가져오고
+- JSON으로 저장하고
+- CSS 파일을 업데이트하고
+- 안전하게 백업까지 생성합니다
 
 ## 특징
 
@@ -26,15 +46,37 @@ Figmable은 Figma 디자인 파일의 컬러 변수를 CSS 파일과 직접 동�
    - 브라우저에서 Figma 파일 열기
    - URL에서 키 복사: `figma.com/file/YOUR_FILE_KEY/...`
 
-3. **CSS 파일**
-   - `@layer base`와 `:root` 구조가 필요
+3. **Figma 컬러 오브젝트**
+
+![Image](https://github.com/user-attachments/assets/094e589d-c835-484d-95bd-f32fc55a88f0)
+
+- 컬러 오브젝트의 이름 앞에 `--` 접두사를 붙여주세요 (예: `--primary-500`, `--orange-600`)
+- 이 네이밍 규칙은 Figmable이 컬러 변수를 식별하고 추출하는데 필요합니다
+- 예시:
+  ```
+  --primary-500  →  #3B82F6
+  --orange-600   →  #EA580C
+  --neutral-900  →  #171717
+  ```
+
+4. **CSS 파일**
+
+   - CSS에 `:root` 선택자가 필요합니다
    - 예시:
+
      ```css
+     /* Tailwind 사용 시 */
      @layer base {
        :root {
          /* CSS 변수가 여기에 추가됩니다 */
          --primary: #000000;
        }
+     }
+
+     /* 또는 일반 CSS도 가능합니다 */
+     :root {
+       /* CSS 변수가 여기에 추가됩니다 */
+       --primary: #000000;
      }
      ```
 
