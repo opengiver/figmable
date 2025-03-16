@@ -47,22 +47,30 @@ interface FigmaResponse {
  * @param {FigmaFetchArgs} argv - Arguments for the fetch operation
  * @returns {Promise<string>} Path to the saved JSON file
  */
-export const fetchFigmaVariables = async (argv: FigmaFetchArgs): Promise<string> => {
+export const fetchFigmaVariables = async (
+  argv: FigmaFetchArgs
+): Promise<string> => {
   const { FIGMA_FILE_KEY, FIGMA_API_TOKEN, outputJsonPath } = argv;
 
   try {
-    const response = await axios.get<FigmaResponse>(`https://api.figma.com/v1/files/${FIGMA_FILE_KEY}`, {
-      headers: {
-        "X-FIGMA-TOKEN": FIGMA_API_TOKEN,
-      },
-    });
+    const response = await axios.get<FigmaResponse>(
+      `https://api.figma.com/v1/files/${FIGMA_FILE_KEY}/variables/local`,
+      {
+        headers: {
+          "X-FIGMA-TOKEN": FIGMA_API_TOKEN,
+        },
+      }
+    );
 
     const figmaData = response.data;
     if (!figmaData.document) {
-      throw new Error("Figma document 데이터를 찾을 수 없습니다.");
+      throw new Error("Figma document data could not be found.");
     }
 
-    const extractColors = (node: FigmaNode, accumulatedColors: Record<string, string>): Record<string, string> => {
+    const extractColors = (
+      node: FigmaNode,
+      accumulatedColors: Record<string, string>
+    ): Record<string, string> => {
       if (!node.children) return accumulatedColors;
 
       return node.children.reduce((acc, child) => {
@@ -83,21 +91,48 @@ export const fetchFigmaVariables = async (argv: FigmaFetchArgs): Promise<string>
 
     const colors = extractColors(figmaData.document, {});
 
-    const outputDir = fs.lstatSync(outputJsonPath).isDirectory() ? outputJsonPath : path.dirname(outputJsonPath); // path.dirname 사용
+    let outputDir;
+    let outputPath;
+
+    try {
+      if (fs.existsSync(outputJsonPath)) {
+        const stats = fs.statSync(outputJsonPath);
+        outputDir = stats.isDirectory()
+          ? outputJsonPath
+          : path.dirname(outputJsonPath);
+        outputPath = stats.isDirectory()
+          ? `${outputJsonPath}/figma-variables.json`
+          : outputJsonPath;
+      } else {
+        if (outputJsonPath.endsWith(".json")) {
+          outputDir = path.dirname(outputJsonPath);
+          outputPath = outputJsonPath;
+        } else {
+          outputDir = outputJsonPath;
+          outputPath = `${outputJsonPath}/figma-variables.json`;
+        }
+      }
+    } catch (error) {
+      outputDir = "./";
+      outputPath = "./figma-variables.json";
+    }
 
     if (!fs.existsSync(outputDir)) {
-      console.log(`❌ ${outputDir} 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.`);
+      console.log(
+        `❌ The directory ${outputDir} does not exist. Creating the directory.`
+      );
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const outputPath = outputJsonPath.endsWith(".json") ? outputJsonPath : `${outputDir}/figma-variables.json`;
     fs.writeFileSync(outputPath, JSON.stringify(colors, null, 2));
 
-    return outputPath; // JSON 파일 경로 반환
+    return outputPath;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 403) {
-        throw new Error("Figma API 토큰이 유효하지 않거나 파일에 대한 접근 권한이 없습니다.");
+        throw new Error(
+          "The Figma API token is invalid or you do not have access to the file."
+        );
       }
     }
     throw error;
