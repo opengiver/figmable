@@ -3,6 +3,10 @@
 ![Image](https://github.com/user-attachments/assets/094e589d-c835-484d-95bd-f32fc55a88f0)
 English | [한국어](.docs/README.ko.md)
 
+![npm](https://img.shields.io/npm/v/figmable) ![npm](https://img.shields.io/npm/dt/figmable) ![npm bundle size](https://img.shields.io/bundlephobia/min/figmable) ![license](https://img.shields.io/npm/l/figmable)
+
+🔗 [figmable on npm](https://www.npmjs.com/package/figmable)
+
 Figmable is a CLI tool that helps you sync color variables from your Figma design files directly to your CSS files. It extracts color variables from Figma and automatically updates your CSS files with the new color variables, making the design-to-development workflow seamless.
 
 ## Quick Start
@@ -188,3 +192,11 @@ MIT
 ## Author
 
 Byungsker
+
+## 한국어
+
+Figmable은 Figma 디자인 파일에서 색상 변수를 CSS 파일로 직접 동기화하는 CLI 도구입니다. Figma에서 색상 변수를 추출하고 새로운 색상 변수로 CSS 파일을 자동으로 업데이트하여 디자인-개발 워크플로우를 원활하게 만듭니다.
+
+## NPM 링크
+
+[npm에서 figmable 보기](https://www.npmjs.com/package/figmable)
